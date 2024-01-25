@@ -2,6 +2,9 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
+import { registerValidator } from './validations/auth.js';
+import { validationResult } from 'express-validator';
+
 mongoose
     .connect('mongodb+srv://admin:6iSVmziwD7NMXAg@cluster0.wxgj0mi.mongodb.net/?retryWrites=true&w=majority')
     .then(() => console.log('DB is OK'))
@@ -11,21 +14,14 @@ const app = express();
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('111 111 Hello World!');
-});
-
-app.post('/auth/login', (req, res) => {
-    console.log(req.body);
-
-    const token = jwt.sign({
-        email: req.body.email,
-        fullName: 'Vasya',
-    }, 'secret123');
+app.post('/auth/register', registerValidator, (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json(errors.array());
+    }
 
     res.json({
         success: true,
-        token,
     })
 });
 
