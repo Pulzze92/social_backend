@@ -8,7 +8,13 @@ import checkAuth from './utils/checkAuth.js';
 
 import { register, login, getUserInfo } from './controllers/UserController.js';
 
-import { createPost } from './controllers/PostController.js';
+import {
+	getAllPosts,
+	getOnePost,
+	createPost,
+	removePost,
+	updatePost,
+} from './controllers/PostController.js';
 import { postCreateValidator } from './validations/post.js';
 
 mongoose
@@ -26,7 +32,11 @@ app.post('/auth/register', registerValidator, register);
 app.post('/auth/login', loginValidator, login);
 app.get('/auth/aboutme', checkAuth, getUserInfo);
 
-app.get('/posts', postCreateValidator, createPost);
+app.get('/posts', getAllPosts);
+app.get('/posts/:id', postCreateValidator, getOnePost);
+app.post('/posts', checkAuth, postCreateValidator, createPost);
+app.delete('/posts/:id', checkAuth, postCreateValidator, removePost);
+app.patch('/posts/:id', checkAuth, postCreateValidator, updatePost);
 
 app.listen(4444, err => {
 	if (err) {
